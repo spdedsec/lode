@@ -10,8 +10,8 @@ Set:
 
 ```bash
 export GITHUB_TOKEN=ghp_or_fine_grained_token
-export GITHUB_REPO=OWNER/PACKAGE-REPO
-export LODE_REGISTRY_REPO=OWNER/lode-registry
+export GITHUB_REPO=spdedsec/lode
+export LODE_REGISTRY_REPO=spdedsec/lode-registry
 export LODE_REGISTRY_PATH=index.json
 ```
 
@@ -19,8 +19,8 @@ On PowerShell:
 
 ```powershell
 $env:GITHUB_TOKEN = "your-token"
-$env:GITHUB_REPO = "OWNER/PACKAGE-REPO"
-$env:LODE_REGISTRY_REPO = "OWNER/lode-registry"
+$env:GITHUB_REPO = "spdedsec/lode"
+$env:LODE_REGISTRY_REPO = "spdedsec/lode-registry"
 $env:LODE_REGISTRY_PATH = "index.json"
 ```
 

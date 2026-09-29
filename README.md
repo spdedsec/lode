@@ -129,17 +129,17 @@ MIT.
 
 ## Installation from GitHub Releases
 
-After you create your own GitHub repository and releases, set `LODE_REPO=OWNER/LODE` and use:
+After you create your own GitHub repository and releases, set `LODE_REPO=spdedsec/lode` and use:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/LODE/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/spdedsec/lode/main/scripts/install.sh | sh
 ```
 
 Windows PowerShell:
 
 ```powershell
-$env:LODE_REPO = "OWNER/LODE"
-irm https://raw.githubusercontent.com/OWNER/LODE/main/scripts/install.ps1 | iex
+$env:LODE_REPO = "spdedsec/lode"
+irm https://raw.githubusercontent.com/spdedsec/lode/main/scripts/install.ps1 | iex
 ```
 
 The release workflow publishes SHA-256 checksums and the installers verify them before installing.

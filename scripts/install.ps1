@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 $Version = if ($env:LODE_VERSION) { $env:LODE_VERSION } else { "latest" }
-$Repo = if ($env:LODE_REPO) { $env:LODE_REPO } else { "OWNER/LODE" }
+$Repo = if ($env:LODE_REPO) { $env:LODE_REPO } else { "spdedsec/lode" }
 $Target = "x86_64-pc-windows-msvc"
 $Asset = "lode-$Target.zip"
 $Base = if ($Version -eq "latest") { "https://github.com/$Repo/releases/latest/download" } else { "https://github.com/$Repo/releases/download/v$Version" }

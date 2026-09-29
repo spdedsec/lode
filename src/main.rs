@@ -8,7 +8,7 @@ use sha2::{Digest, Sha256};
 use std::{collections::BTreeMap, fs, io::Read, path::{Path, PathBuf}, process::Command};
 
 const APP: &str = "lode";
-const DEFAULT_REGISTRY: &str = "https://raw.githubusercontent.com/OWNER/lode-registry/main/index.json";
+const DEFAULT_REGISTRY: &str = "https://raw.githubusercontent.com/spdedsec/lode-registry/main/index.json";
 
 #[derive(Parser, Debug)]
 #[command(name = APP, version, about = "Fast, cross-platform binary package manager")]

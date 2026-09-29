@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            archive: tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            archive: zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.85.0
+          targets: ${{ matrix.target }}
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-release-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-release-${{ matrix.target }}-
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Package Unix
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="lode-${{ matrix.target }}"
+          mkdir "$dir"
+          cp "target/${{ matrix.target }}/release/lode" "$dir/lode"
+          chmod 0755 "$dir/lode"
+          tar -czf "$dir.tar.gz" "$dir"
+          sha256sum "$dir.tar.gz" > "$dir.tar.gz.sha256"
+      - name: Package Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $dir = "lode-${{ matrix.target }}"
+          New-Item -ItemType Directory $dir | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/lode.exe" "$dir/lode.exe"
+          Compress-Archive -Path $dir -DestinationPath "$dir.zip"
+          $hash = (Get-FileHash "$dir.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $dir.zip" | Out-File -Encoding ascii "$dir.zip.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lode-${{ matrix.target }}
+          path: |
+            lode-${{ matrix.target }}.${{ matrix.archive }}
+            lode-${{ matrix.target }}.${{ matrix.archive }}.sha256
+
+  publish:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: lode-*
+          merge-multiple: true
+      - name: Create aggregate checksums
+        working-directory: dist
+        run: cat *.sha256 | sed 's#^\([^ ]*\)  #\1  #' > SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*

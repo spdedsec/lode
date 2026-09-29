@@ -10,7 +10,7 @@ case "$OS/$ARCH" in
   *) echo "Unsupported platform: $OS/$ARCH" >&2; exit 1 ;;
 esac
 
-REPO="${LODE_REPO:-OWNER/LODE}"
+REPO="${LODE_REPO:-spdedsec/lode}"
 BASE="https://github.com/$REPO/releases"
 if [ "$VERSION" = "latest" ]; then BASE="$BASE/latest/download"; else BASE="$BASE/download/v$VERSION"; fi
 ASSET="lode-$TARGET.tar.gz"
