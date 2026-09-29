@@ -46,7 +46,7 @@ struct ProjectManifest {
     #[serde(default)]
     dependencies: BTreeMap<String, String>,
 }
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 struct ProjectPackage { name: String, version: String, #[serde(default)] description: String }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -224,7 +224,7 @@ fn pack(path:&Path, output:Option<PathBuf>)->Result<()> {
     let f=fs::File::create(&out)?; let mut zip=zip::ZipWriter::new(f); let opts=zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
     add_dir_to_zip(&mut zip,&root,&root,&opts)?; zip.finish()?; println!("created {}",out.display()); println!("sha256 {}",file_sha256(&out)?); Ok(())
 }
-fn add_dir_to_zip(zip:&mut zip::ZipWriter<fs::File>,root:&Path,dir:&Path,opts:&zip::write::SimpleFileOptions)->Result<()> { for e in fs::read_dir(dir)? { let p=e?.path(); let rel=p.strip_prefix(root)?.to_string_lossy().replace('\\','/'); if p.is_dir(){zip.add_directory(format!("{rel}/"),*opts)?;add_dir_to_zip(zip,root,&p,opts)?}else{zip.start_file(rel,*opts)?;let mut f=fs::File::open(p)?;std::io::copy(&mut f,zip)?;} } Ok(()) }
+fn add_dir_to_zip(zip:&mut zip::ZipWriter<fs::File>,root:&Path,dir:&Path,opts:&zip::write::SimpleFileOptions)->Result<()> { for e in fs::read_dir(dir)? { let p=e?.path(); let rel=p.strip_prefix(root)?.to_string_lossy().replace('\\',"/"); if p.is_dir(){zip.add_directory(format!("{rel}/"),*opts)?;add_dir_to_zip(zip,root,&p,opts)?}else{zip.start_file(rel,*opts)?;let mut f=fs::File::open(p)?;std::io::copy(&mut f,zip)?;} } Ok(()) }
 fn file_sha256(p:&Path)->Result<String>{let mut f=fs::File::open(p)?;let mut h=Sha256::new();let mut buf=[0u8;8192];loop{let n=f.read(&mut buf)?;if n==0{break}h.update(&buf[..n]);}Ok(hex(&h.finalize()))}
 
 fn publish(artifact: &Path, registry: Option<String>) -> Result<()> {
@@ -287,7 +287,7 @@ fn update_registry(client: &reqwest::blocking::Client, token: &str, repo: &str, 
     if let Some(i) = release_index {
         releases[i].targets.insert(target_key.into(), Artifact { url: url.into(), sha256: sha.into() });
     } else {
-        releases.push(RegistryRelease { name: package_name.clone(), version: version.into(), description: "Published by LODE".into(), license: "".into(), dependencies: BTreeMap::new(), targets: BTreeMap::from([(target_key.into(), Artifact { url: url.into(), sha256: sha.into() })]) });
+        releases.push(RegistryRelease { name: package_name.to_string(), version: version.into(), description: "Published by LODE".into(), license: "".into(), dependencies: BTreeMap::new(), targets: BTreeMap::from([(target_key.into(), Artifact { url: url.into(), sha256: sha.into() })]) });
     }
     releases.sort_by(|a,b| Version::parse(&b.version).ok().cmp(&Version::parse(&a.version).ok()));
     let body = serde_json::to_vec_pretty(&index)?;
