@@ -1,0 +1,9 @@
+name = "demo-tool"
+version = "1.0.0"
+description = "Demo package for LODE registry development"
+license = "MIT"
+dependencies = {}
+
+[targets.x86_64-unknown-linux-gnu]
+url = "file:///replace/me/demo-tool-1.0.0-x86_64-unknown-linux-gnu.zip"
+sha256 = "REPLACE_WITH_SHA256"
